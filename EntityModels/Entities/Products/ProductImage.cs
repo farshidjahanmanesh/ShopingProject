@@ -9,7 +9,7 @@ namespace EntityModels.Entities.Products
     {
         public int Id { get; set; }
         public string ImageUrl { get; set; }
-        public EnumImagePriority Priority { get; set; }
+       
         public int ProductId { get; set; }
         public Product Product { get; set; }
     }

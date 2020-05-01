@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityModels.Generators;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,11 @@ namespace EntityModels.Entities.Posts
         public string FullText { get; set; }
         public DateTime PublishDate { get; set; }
         public bool IsActive { get; set; }
+        public string Slug { get; set; }
         public int AuthorId { get; set; }
         public List<PostImage> Images { get; set; } = new List<PostImage>();
         public List<PostKeyword> Keywords { get; set; } = new List<PostKeyword>();
         public List<PostComment> Comments { get; set; } = new List<PostComment>();
-        public List<LinkTogether> Links { get; set; } = new List<LinkTogether>();
     }
 
     public class PostConfig : IEntityTypeConfiguration<Post>
@@ -33,7 +34,8 @@ namespace EntityModels.Entities.Posts
             builder.HasMany(x => x.Images).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Comments).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Keywords).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(x => x.Links).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.Slug).HasMaxLength(400).HasValueGenerator<SlugGenerator>().IsRequired();
+
 
             builder.HasIndex(x => x.Title);
         }

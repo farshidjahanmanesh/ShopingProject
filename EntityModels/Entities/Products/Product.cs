@@ -16,7 +16,7 @@ namespace EntityModels.Entities.Products
         public DateTime PublishDate { get; set; }
         public bool IsActive { get; set; }
         public int SellerId { get; set; }
-
+        
         public Nullable<int> GroupId { get; set; }
         public ProductGroups Group { get; set; }
 
@@ -25,7 +25,6 @@ namespace EntityModels.Entities.Products
         public List<ProductImage> Images { get; set; } = new List<ProductImage>();
         public List<ProductComment> Comments { get; set; } = new List<ProductComment>();
         public List<ProductKeyword> Keywords { get; set; } = new List<ProductKeyword>();
-        public List<LinkTogether> Links { get; set; } = new List<LinkTogether>();
 
     }
 
@@ -40,8 +39,7 @@ namespace EntityModels.Entities.Products
             builder.HasMany(x => x.Images).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Comments).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Keywords).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(x => x.Links).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
-
+          
             builder.HasIndex(x => x.Price);
             builder.HasIndex(x => x.PublishDate);
         }
