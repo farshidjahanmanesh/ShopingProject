@@ -1,0 +1,48 @@
+﻿@model List<NavbarViewModel>
+
+
+<div class="side-menu animate-dropdown">
+    <div class="head" style="text-align:center"><i class="icon fa fa-bars"></i> دسته بندی ها</div>
+    <nav class="yamm megamenu-horizontal">
+        <ul class="nav">
+            @foreach (var item in Model)
+            {
+                <li class="dropdown menu-item" style="text-align:right;">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon fa fa-shopping-bag" aria-hidden="true"></i>@item.Text</a>
+                    <!-- ================================== MEGAMENU VERTICAL ================================== -->
+                    @if (item.Groups.Count > 0)
+                    {
+                        <ul class="dropdown-menu mega-menu">
+                            <li class="yamm-content">
+                                <div class="row">
+
+                                    <div class="col-xs-12 col-sm-12 col-lg-4" style="float:right;">
+                                        <ul style="text-align:right;direction:rtl">
+                                            @foreach (var subitem in item.Groups)
+                                            {
+                                                <li><a href="#">@subitem.Text</a></li>
+                                            }
+                                        </ul>
+                                    </div>
+
+
+                                </div>
+                                <!-- /.row -->
+                            </li>
+                            <!-- /.yamm-content -->
+                        </ul>
+                    }
+
+
+                    <!-- /.dropdown-menu -->
+                    <!-- ================================== MEGAMENU VERTICAL ================================== -->
+                </li>
+            }
+
+            <!-- /.menu-item -->
+
+        </ul>
+        <!-- /.nav -->
+    </nav>
+    <!-- /.megamenu-horizontal -->
+</div>

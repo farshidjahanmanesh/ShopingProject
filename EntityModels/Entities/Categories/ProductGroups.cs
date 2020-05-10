@@ -1,11 +1,12 @@
-﻿using EntityModels.Entities.Products;
+﻿using EntityModels.Entities.BasicEntity;
+using EntityModels.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 
 namespace EntityModels.Entities.Categories
 {
-    public class ProductGroups
+    public class ProductGroups:IIsActive
     {
         public int Id { get; set; }
         public string Text { get; set; }
@@ -24,8 +25,8 @@ namespace EntityModels.Entities.Categories
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Text).HasMaxLength(300).IsRequired();
-            builder.HasMany(x => x.Products).WithOne(x => x.Group).HasForeignKey(x => x.GroupId).OnDelete(DeleteBehavior.SetNull);
-
+            builder.HasMany(x => x.Products).WithOne(x => x.Group).HasForeignKey(x => x.GroupId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasQueryFilter(x => x.IsActive == true);
         }
     }
 

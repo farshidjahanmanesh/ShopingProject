@@ -74,6 +74,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
+                    b.Property<string>("BaseImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasMaxLength(450);
+
                     b.Property<string>("FullText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -194,10 +199,15 @@ namespace DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("BaseImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasMaxLength(450);
+
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -216,6 +226,15 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("SellerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("Summery")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -335,6 +354,38 @@ namespace DataAccess.Migrations
                     b.ToTable("ProductKeyword");
                 });
 
+            modelBuilder.Entity("EntityModels.Entities.Site.Slider", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("Summery")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("Tag")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Slider");
+                });
+
             modelBuilder.Entity("EntityModels.Entities.Categories.ProductGroups", b =>
                 {
                     b.HasOne("EntityModels.Entities.Categories.Category", "Category")
@@ -376,7 +427,8 @@ namespace DataAccess.Migrations
                     b.HasOne("EntityModels.Entities.Categories.ProductGroups", "Group")
                         .WithMany("Products")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EntityModels.Entities.Products.ProductComment", b =>

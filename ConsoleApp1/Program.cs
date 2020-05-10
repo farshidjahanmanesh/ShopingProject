@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using DataAccess.Context;
+using EntityModels.DTOs.PostDtos;
 using EntityModels.Entities.Categories;
 using EntityModels.Entities.Posts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ServiceLayer.AutoMapper;
 using ServiceLayer.Services.BlogServices;
+using ServiceLayer.Services.ProductServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -155,19 +157,122 @@ namespace ConsoleApp1
             .AddTransient<MyMapper, AutoMapperConfig>()
             .AddTransient<ShopDbContext, ShopDbContext>()
             .BuildServiceProvider();
-            UpdatePost().Wait();
+
+            ProductAddThenUpdateIt().Wait();
+            //  UpdatePost().Wait();
             Console.WriteLine("hello");
+        }
+
+        public static async Task ProductAddThenUpdateIt()
+        {
+            IProductService pr = new ProductService(Services.GetService<ShopDbContext>(), Services.GetService<MyMapper>());
+          var res=  pr.FindProducts(10, 0, null);
+            
+            
+            var post = await pr.FindProductAsync(1);
+            post.Count = 400;
+            post.Name = "gaming system";
+            pr.UpdateProduct(post);
+            await pr.SaveChangesAsync();
+            pr.UpdateProduct(new EntityModels.DTOs.ProductDtos.ProductDto()
+            {
+                Count = 110,
+                Name = "farshid jahanmanesh aaaa",
+                Id = 1
+            });
+            pr.SaveChanges();
+            var productDto = new EntityModels.DTOs.ProductDtos.ProductDto()
+            {
+                Count = 20,
+                Name = "fake01",
+                Price = 3000,
+                SellerId = 2
+            };
+            productDto.Details.Add(new EntityModels.Entities.Products.ProductDetail()
+            {
+                Name = "qeqw",
+                Value = "ihfwiohfwn iwhedoqw"
+            });
+            productDto.Details.Add(new EntityModels.Entities.Products.ProductDetail()
+            {
+                Name = "qeqqwqwqww",
+                Value = "ihfwi11111ohfwn111iwhedoqw"
+            });
+            productDto.Details.Add(new EntityModels.Entities.Products.ProductDetail()
+            {
+                Name = "qeqsdasfvcw",
+                Value = "ihfwiohfwn iw321hedoqw"
+            });
+
+
+            productDto.Keywords.Add(new EntityModels.Entities.Products.ProductKeyword()
+            {
+                Text = "qweqw"
+            });
+
+
+            productDto.Images.Add(new EntityModels.Entities.Products.ProductImage()
+            {
+                ImageUrl = "qweq"
+            });
+
+            await pr.AddProductAsync(productDto);
+            await pr.SaveChangesAsync();
         }
 
         private async static Task UpdatePost()
         {
 
             BlogService b = new BlogService(Services.GetService<ShopDbContext>(), Services.GetService<MyMapper>());
-          // b.DeletePost(new EntityModels.DTOs.PostDto() { 
-          
-          //Id=149
-          //});
-          // await b.SaveChangesAsync();
+
+
+            var pos = await b.FindPostAsync(170);
+            pos.Title = "farshid fffffffff";
+            b.UpdatePost(pos);
+            await b.SaveChangesAsync();
+            await b.AddPostAsync(new PostDto()
+            {
+                FullText = "qwe",
+                Summery = "dqweq",
+                Title = "qeweq54354ed aaaaa bbbb",
+                AuthorId = 1
+            });
+            await b.SaveChangesAsync();
+
+
+
+
+
+
+
+            //  var res= b.FindPosts("faraz");
+            var postdto = new PostDto()
+            {
+                FullText = "dqweq",
+                AuthorId = 0,
+                Summery = "qweqweqw",
+                Title = "hello hello"
+            };
+            postdto.Comments.Add(new PostCommentDto()
+            {
+                Email = "qwe",
+                Name = "deqwe",
+                Text = "qweq"
+            });
+            postdto.Images.Add(new PostImage()
+            {
+                ImageUrl = "dqweq"
+
+            });
+
+            await b.AddPostAsync(postdto);
+            await b.SaveChangesAsync();
+            /// var r=  b.FindPosts(20, 0, "farshid");
+            // b.DeletePost(new EntityModels.DTOs.PostDto() { 
+
+            //Id=149
+            //});
+            // await b.SaveChangesAsync();
             //{
             //    CancellationTokenSource source = new CancellationTokenSource();
             //    CancellationToken token = source.Token;
@@ -185,11 +290,10 @@ namespace ConsoleApp1
             //    });
             //   await b.SaveChangesAsync();
 
-            b.UpdatePost(new EntityModels.DTOs.PostDto()
+            b.UpdatePost(new PostDto()
             {
                 Id = 4,
                 Title = "farshiasdqwd jahanmanesh",
-                 PublishDate = DateTime.Now,
                 //AuthorId=1
             });
             await b.SaveChangesAsync();

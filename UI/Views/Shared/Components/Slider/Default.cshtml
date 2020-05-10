@@ -1,0 +1,52 @@
+﻿@model List<SliderViewModel>
+
+
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div id="hero">
+            <div id="owl-main" class="owl-carousel owl-inner-nav owl-ui-sm">
+                @foreach (var item in Model)
+                {
+                    <div class="item" style="background-image: url(/images/sliders/@item.Path);">
+                        <div class="container-fluid">
+                            <div class="caption bg-color vertical-center text-left" style="text-align:right;right:0px;direction:rtl">
+                                <div class="slider-header fadeInDown-1">@item.Tag</div>
+                                <div class="big-text fadeInDown-1"> @item.Name</div>
+                                <div class="excerpt fadeInDown-2 hidden-xs text-wraping" onclick="RevealHiddenOverflow(this);"> <span>@item.Summery</span> </div>
+                                <div class="button-holder fadeInDown-3"> <a href="index6c11.html?page=single-product" class="btn-lg btn btn-uppercase btn-primary shop-now-button">Shop Now</a> </div>
+                            </div>
+                            <!-- /.caption -->
+                        </div>
+                        <!-- /.container-fluid -->
+                    </div>
+                    <!-- /.item -->
+                }
+
+
+
+            </div>
+            <!-- /.owl-carousel -->
+        </div>
+        <div class="info-boxes wow fadeInUp">
+            <div class="info-boxes-inner">
+                <div class="row">
+                    @foreach(var item in Model.Take(3))
+                    {
+                    <div class="col-md-6 col-sm-4 col-lg-4">
+                        <div class="info-box">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h4 class="info-box-heading green">@item.Name</h4>
+                                </div>
+                            </div>
+                            <h6 class="text  text-wraping" onclick="RevealHiddenOverflow(this);">@item.Summery</h6>
+                        </div>
+                    </div>
+                    }
+                    
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.info-boxes-inner -->
+
+        </div>
+    </div>

@@ -21,12 +21,11 @@ namespace EntityModels.Generators
                     {
                        return post.Title.Trim().Replace(" ", "-");
                     }
-                  //  break;
                 case Product product:
                     {
-                     //   product.Slug = product.Name.Trim().Replace(" ", "-");
+                       return product.Name.Trim().Replace(" ", "-");
                     }
-                    break;
+                    
             }
             return "";
         }

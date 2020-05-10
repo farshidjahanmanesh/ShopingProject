@@ -1,0 +1,70 @@
+﻿@model IEnumerable<NewProductsViewModel>
+
+
+
+<div id="product-tabs-slider" class="scroll-tabs outer-top-vs wow fadeInUp">
+    <div class="more-info-tab clearfix ">
+        <h3 class="new-product-title pull-right" style="margin-right:50px;">جدیدترین محصولات</h3>
+        <ul class="nav nav-tabs nav-tab-line pull-left" id="new-products-1">
+            <li class="active"><a data-transition-type="backSlide" href="#all" data-toggle="tab">All</a></li>
+        </ul>
+        <!-- /.nav-tabs -->
+    </div>
+    <div class="tab-content outer-top-xs">
+        <div class="tab-pane in active" id="all">
+            <div class="product-slider">
+                <div class="owl-carousel home-owl-carousel custom-carousel owl-theme" data-item="4">
+                    @foreach (var item in Model)
+                    {
+                    <div class="item item-carousel  pull-right">
+                        <div class="products">
+                            <div class="product">
+                                <div class="product-image">
+                                    <div class="image"> <a asp-action="ShowPost" asp-controller="product" asp-route-id="@item.Id" asp-route-slug="@item.Slug"><img src="/images/products/@item.BaseImage" alt="@item.Name"></a> </div>
+                                    <!-- /.image -->
+
+                                    <div class="tag new"><span>جدید</span></div>
+                                </div>
+                                <!-- /.product-image -->
+
+                                <div class="product-info text-left">
+                                    <h3 class="name" style="direction:rtl;text-align:center"><a asp-action="ShowPost" asp-controller="product" asp-route-id="@item.Id" asp-route-slug="@item.Slug">@item.Name</a></h3>
+                                 
+                                    <div class="description"></div>
+                                    <div class="product-price" style="text-align:center"> <span class="price" > @item.Price ريال </span> @*<span class="price-before-discount">$ 800</span>*@ </div>
+                                    <!-- /.product-price -->
+
+                                </div>
+                                <!-- /.product-info -->
+                                <div class="cart clearfix animate-effect">
+                                    <div class="action">
+                                        <ul class="list-unstyled">
+                                            <li class="add-cart-button btn-group">
+                                                <button data-toggle="tooltip" class="btn btn-primary icon" type="button" title="اضافه کردن به سبد خرید"> <i class="fa fa-shopping-cart"></i> </button>
+                                                <button class="btn btn-primary cart-btn" type="button">اضافه کردن به سبد خرید</button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /.action -->
+                                </div>
+                                <!-- /.cart -->
+                            </div>
+                            <!-- /.product -->
+
+                        </div>
+                        <!-- /.products -->
+                    </div>
+                    }
+                    
+                    <!-- /.item -->
+
+                </div>
+                <!-- /.home-owl-carousel -->
+            </div>
+            <!-- /.product-slider -->
+        </div>
+        <!-- /.tab-pane -->
+
+    </div>
+    <!-- /.tab-content -->
+</div>

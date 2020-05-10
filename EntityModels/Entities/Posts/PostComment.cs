@@ -1,11 +1,12 @@
-﻿using EntityModels.Entities.Products;
+﻿using EntityModels.Entities.BasicEntity;
+using EntityModels.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
 namespace EntityModels.Entities.Posts
 {
-    public class PostComment
+    public class PostComment:IBase
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -25,7 +26,7 @@ namespace EntityModels.Entities.Posts
             builder.Property(x => x.Name).HasMaxLength(300).IsRequired();
             builder.Property(x => x.Email).HasMaxLength(400).IsRequired();
             builder.Property(x => x.Text).HasMaxLength(600).IsRequired();
-
+            builder.HasQueryFilter(x => x.IsActive == true);
         }
     }
 

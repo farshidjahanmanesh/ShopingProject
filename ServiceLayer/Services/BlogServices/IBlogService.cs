@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using DataAccess.Context;
 using EntityModels.DTOs;
+using EntityModels.DTOs.PostDtos;
 using EntityModels.Entities.Posts;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.AutoMapper;
 using ServiceLayer.CheckDtoValidations;
+using ServiceLayer.QueryExtenstion;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,18 +15,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace ServiceLayer.Services.BlogServices
 {
     public interface IBlogService
     {
         #region Post
-        public Task<TaskStatus> AddPost(PostDto post);
+        public Task<TaskStatus> AddPostAsync(PostDto post);
         public void UpdatePost(PostDto post);
         public void DeletePost(PostDto post);
         public Task<PostDto> FindPostAsync(int id);
         public List<PostDto> FindPosts(string titleOrKeyword);
         public List<PostDto> GetAllPosts();
-        public List<PostDto> FindPosts(int count, int page);
+        public List<PostSummeryDto> FindPosts(int count, int page, string titleOrKeyword);
 
         #endregion
 
@@ -33,26 +36,15 @@ namespace ServiceLayer.Services.BlogServices
         public Task AddCommentAsync(PostComment comment);
         public void ActivateComments(IEnumerable<PostComment> activate);
         public void DeleteComment(int id);
+        public List<SummeryLastCommentDto> LastComments(int count);
+        
 
         #endregion
 
-        #region Image
-        public void AddImage(PostImage image);
-        public void AddImage(IEnumerable<PostImage> images);
-        public void RemoveImage(int id);
-
-        #endregion
-
-        #region Keyword
-
-        public void AddKeywords(IEnumerable<PostKeyword> keys);
-        public void RemoveKeywords(IEnumerable<PostKeyword> keys);
-
-        #endregion
-
-
+        
         #region base
         Task SaveChangesAsync();
+        Task SaveChangesAsyncWithOutDetect();
         #endregion
 
     }
@@ -101,7 +93,13 @@ namespace ServiceLayer.Services.BlogServices
 
         }
 
-
+        public List<SummeryLastCommentDto> LastComments(int count)
+        {
+            var len = _ctx.PostComment.Count();
+           var comments= _ctx.PostComment.OrderByDescending(x => x.PublishDate).Skip(len-count>0?len-count:count-len).Take(count);
+            var result = mapper.Map<List<SummeryLastCommentDto>>(comments);
+            return result;
+        }
 
         #endregion
 
@@ -109,37 +107,16 @@ namespace ServiceLayer.Services.BlogServices
         public void UpdatePost(PostDto postDto)
         {
             var OldPost = _ctx.Post.Find(postDto.Id);
-             OldPost =(Post)mapper.Map(postDto,OldPost,typeof(PostDto),typeof(Post));
-            var res = _ctx.Entry(OldPost).State;
-            _ctx.SaveChanges();
-            //foreach (var item in _ctx.Entry(OldPost).Properties)
-            //{
-            //    foreach (var subitem in post.GetType().GetProperties())
-            //    {
-            //        if (item.Metadata.Name == subitem.Name)
-            //        {
-            //            var valueOfNewObject = post.GetType().GetProperty(subitem.Name).GetValue(post, null);
-
-            //            if (valueOfNewObject == null)
-            //                break;
-
-            //            if (valueOfNewObject.Equals(item.CurrentValue)==false)
-            //            {
-            //                item.CurrentValue = valueOfNewObject;
-            //            }
-            //            break;
-            //        }
-            //    }
-            //}
-
-
+            OldPost = (Post)mapper.Map(postDto, OldPost, typeof(PostDto), typeof(Post));
+          
         }
-        public async Task<TaskStatus> AddPost(PostDto postDto)
+        public async Task<TaskStatus> AddPostAsync(PostDto postDto)
         {
             if (CheckValidation.CheckObjectIsValid<PostDto>(postDto))
             {
                 var post = mapper.Map<Post>(postDto);
                 await _ctx.Post.AddAsync(post);
+                
                 return TaskStatus.RanToCompletion;
             }
             else
@@ -171,55 +148,57 @@ namespace ServiceLayer.Services.BlogServices
             await _ctx.Entry(BasePost).Collection(x => x.Images).LoadAsync();
             return mapper.Map<PostDto>(BasePost);
         }
-        #endregion
-
-        public void AddImage(PostImage image)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddImage(IEnumerable<PostImage> images)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddKeywords(IEnumerable<PostKeyword> keys)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
-
-
-
-
 
         public List<PostDto> FindPosts(string titleOrKeyword)
         {
-            throw new NotImplementedException();
+            if (titleOrKeyword == "" || titleOrKeyword == null)
+            {
+                return null;
+            }
+            var DtoPostList = new List<PostDto>();
+
+            //get post when keyword is contain of input and then mapping it to type postdto
+            //then add this collection to dtopostlist
+            DtoPostList.AddRange(mapper.Map<List<PostDto>>(_ctx.PostKeyword.AsNoTracking().Where(x => (titleOrKeyword == "" || titleOrKeyword == null) || x.Text.Contains(titleOrKeyword))
+                .Include(x => x.Post)?.Select(x => x.Post).ToList()));
+
+            DtoPostList.AddRange(mapper.Map<List<PostDto>>(_ctx.Post.AsNoTracking().Where(x => (titleOrKeyword == "" || titleOrKeyword == null) || x.Title.Contains(titleOrKeyword))));
+
+            return DtoPostList;
         }
 
-        public List<PostDto> FindPosts(int count, int page)
+        public List<PostSummeryDto> FindPosts(int count, int page, string titleOrKeyword)
         {
-            throw new NotImplementedException();
+            if ( count < 0 || page < 0)
+            {
+                return null;
+            }
+            var DtoPostList = new List<PostSummeryDto>();
+
+            
+            //get post when keyword is contain of input and then mapping it to type postdto
+            //then add this collection to dtopostlist
+            DtoPostList.AddRange(mapper.Map<List<PostSummeryDto>>(_ctx.PostKeyword.AsNoTracking().Where(x =>(titleOrKeyword==""||titleOrKeyword==null)|| x.Text.Contains(titleOrKeyword))
+                .Include(x => x.Post)?.Select(x => x.Post).SkipAndTake(page,count,QueryExtension.OrderBy.date).ToList()));
+
+            DtoPostList.AddRange(mapper.Map<List<PostSummeryDto>>(
+                _ctx.Post.AsNoTracking().Where(x => (titleOrKeyword == "" || titleOrKeyword == null) || x.Title.Contains(titleOrKeyword))
+                .SkipAndTake(page, count, QueryExtension.OrderBy.date)));
+
+            return DtoPostList;
         }
 
         public List<PostDto> GetAllPosts()
         {
-            throw new NotImplementedException();
+            return mapper.Map<List<PostDto>>(_ctx.Post.AsNoTracking().ToList());
         }
 
-        public void RemoveImage(int id)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void RemoveKeywords(IEnumerable<PostKeyword> keys)
-        {
-            throw new NotImplementedException();
-        }
+
+        #endregion
+
+
+        #region base
 
         public async Task SaveChangesAsync()
         {
@@ -234,6 +213,6 @@ namespace ServiceLayer.Services.BlogServices
             await _ctx.SaveChangesAsync();
         }
 
-
+        #endregion
     }
 }

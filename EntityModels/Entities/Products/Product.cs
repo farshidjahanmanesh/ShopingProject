@@ -1,4 +1,6 @@
-﻿using EntityModels.Entities.Categories;
+﻿using EntityModels.Entities.BasicEntity;
+using EntityModels.Entities.Categories;
+using EntityModels.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -7,7 +9,7 @@ using System.Text;
 
 namespace EntityModels.Entities.Products
 {
-    public class Product
+    public class Product:IBase
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,8 +18,10 @@ namespace EntityModels.Entities.Products
         public DateTime PublishDate { get; set; }
         public bool IsActive { get; set; }
         public int SellerId { get; set; }
-        
-        public Nullable<int> GroupId { get; set; }
+        public string Slug { get; set; }
+        public string Summery { get; set; }
+        public string BaseImage { get; set; }
+        public int GroupId { get; set; }
         public ProductGroups Group { get; set; }
 
 
@@ -39,9 +43,12 @@ namespace EntityModels.Entities.Products
             builder.HasMany(x => x.Images).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Comments).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Keywords).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
-          
+            builder.Property(x => x.Slug).HasMaxLength(500).HasValueGenerator<SlugGenerator>().IsRequired();
             builder.HasIndex(x => x.Price);
             builder.HasIndex(x => x.PublishDate);
+           builder.Property(x => x.Summery).IsRequired();
+            builder.Property(x => x.BaseImage).IsRequired().HasMaxLength(450);
+            builder.HasQueryFilter(x => x.IsActive == true);
         }
     }
 

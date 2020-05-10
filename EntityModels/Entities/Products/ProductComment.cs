@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityModels.Entities.BasicEntity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
 namespace EntityModels.Entities.Products
 {
-    public class ProductComment
+    public class ProductComment:IBase
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -23,6 +24,7 @@ namespace EntityModels.Entities.Products
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(300).IsRequired();
             builder.Property(x => x.Email).HasMaxLength(400).IsRequired();
+            builder.HasQueryFilter(x => x.IsActive == true);
             builder.Property(x => x.Text).HasMaxLength(600).IsRequired();
 
         }

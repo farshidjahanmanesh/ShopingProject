@@ -1,0 +1,29 @@
+﻿@model List<LastCommentsViewModel>
+
+<div class="sidebar-widget  wow fadeInUp outer-top-vs ">
+    <div id="advertisement" class="advertisement">
+        @foreach (var item in Model)
+        {
+            <div class="item">
+                <div class="avatar"><img src="/images/testimonials/member1.png" alt="site name"></div>
+                <div class="testimonials">
+                        <em>"</em>
+                        @item.Text
+                        <em>"</em>
+                   
+                   
+                </div>
+                <div class="clients_author">
+                    <span> @item.PublishDate.ToShortDateString()</span>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            
+            <!-- /.item -->
+        }
+
+
+
+    </div>
+    <!-- /.owl-carousel -->
+</div>

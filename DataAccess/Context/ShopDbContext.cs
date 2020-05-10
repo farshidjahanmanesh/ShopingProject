@@ -1,4 +1,8 @@
-﻿using EntityModels.Entities.Posts;
+﻿using EntityModels.Entities.BasicEntity;
+using EntityModels.Entities.Categories;
+using EntityModels.Entities.Posts;
+using EntityModels.Entities.Products;
+using EntityModels.Entities.Site;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,37 +22,59 @@ namespace DataAccess.Context
         }
         public ShopDbContext(DbContextOptions<ShopDbContext> options) : base(options)
         {
-
         }
 
         public DbSet<Post> Post { get; set; }
-        public DbSet<PostComment> PostComment { get; set; } = null;
+        public DbSet<Product> Product { get; set; }
+        public DbSet<PostComment> PostComment { get; set; }
+        public DbSet<PostKeyword> PostKeyword { get; set; }
+        public DbSet<ProductKeyword> ProductKeyword { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<ProductGroups> ProductGroups { get; set; }
+        public DbSet<Slider> Slider { get; set; }
 
         public override int SaveChanges()
         {
             this.ChangeTracker.DetectChanges();
 
             #region added
-
-            var AddedPosts = ChangeTracker.Entries<Post>().Where(x => x.State == EntityState.Added)
-                .Select(x => x.Entity).ToArray();
-
-            foreach (var item in AddedPosts)
+            var AllEntities = ChangeTracker.Entries().Where(x => x.State == EntityState.Added).Select(x => x.Entity);
+            
+            foreach (var item in AllEntities)
             {
-                item.PublishDate = DateTime.Now;
+                if (item.GetType().GetInterface(nameof(IBase)) != null)
+                {
+                    IBase basicFile = item as IBase;
+                    basicFile.IsActive = false;
+                    basicFile.PublishDate = DateTime.Now;
+                }
+                else if (item.GetType().GetInterface(nameof(IIsActive)) != null)
+                {
+                    IIsActive ISAct = item as IIsActive;
+                    ISAct.IsActive = false;
+                }
             }
-
+           
 
             #endregion
 
             #region modified
-            var posts = ChangeTracker.Entries<Post>()
+            var Modifiedobject = ChangeTracker.Entries()
                 .Where(x => x.State == EntityState.Modified)
                 .Select(x => x.Entity).ToArray();
 
-            foreach (var item in posts)
+            foreach (var item in Modifiedobject)
             {
-                item.Slug = item.Title.Trim().Replace(" ", "-");
+                if (item.GetType().Name == nameof(EntityModels.Entities.Posts.Post))
+                {
+                    var SourceObject = item as Post;
+                    SourceObject.Slug = SourceObject.Title.Trim().Replace(" ", "-");
+
+                }else if(item.GetType().Name == nameof(EntityModels.Entities.Products.Product))
+                {
+                    var SourceObject = item as Product;
+                    SourceObject.Slug = SourceObject.Name.Trim().Replace(" ", "-");
+                }
             }
 
 
@@ -60,30 +86,48 @@ namespace DataAccess.Context
         {
             this.ChangeTracker.DetectChanges();
             #region added
+            var AllEntities = ChangeTracker.Entries().Where(x => x.State == EntityState.Added).Select(x => x.Entity);
 
-            var AddedPosts = ChangeTracker.Entries<Post>().Where(x => x.State == EntityState.Added)
-                .Select(x=>x.Entity).ToArray();
-
-            foreach(var item in AddedPosts)
+            foreach (var item in AllEntities)
             {
-                item.PublishDate = DateTime.Now;
+                if (item.GetType().GetInterface(nameof(IBase))!=null)
+                {
+                    IBase basicFile = item as IBase;
+                    basicFile.IsActive = false;
+                    basicFile.PublishDate = DateTime.Now;
+                }
+                else if (item.GetType().GetInterface(nameof(IIsActive)) != null)
+                {
+                    IIsActive ISAct = item as IIsActive;
+                    ISAct.IsActive = false;
+                }
             }
 
 
             #endregion
 
 
+
             #region modified
-            var modifiedposts = ChangeTracker.Entries<Post>()
-                .Where(x => x.State == EntityState.Modified)
-                .Select(x => x.Entity).ToArray();
+            var Modifiedobject = ChangeTracker.Entries()
+                  .Where(x => x.State == EntityState.Modified)
+                  .Select(x => x.Entity).ToArray();
 
-            foreach (var item in modifiedposts)
+            foreach (var item in Modifiedobject)
             {
-                if (item.Title != null && item.Title != "")
-                    item.Slug = item.Title.Trim().Replace(" ", "-");
+                if (item.GetType().Name == nameof(EntityModels.Entities.Posts.Post))
+                {
+                    var SourceObject = item as Post;
+                    SourceObject.Slug = SourceObject.Title.Trim().Replace(" ", "-");
 
+                }
+                else if (item.GetType().Name == nameof(EntityModels.Entities.Products.Product))
+                {
+                    var SourceObject = item as Product;
+                    SourceObject.Slug = SourceObject.Name.Trim().Replace(" ", "-");
+                }
             }
+
 
             #endregion
 

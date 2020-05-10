@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EntityModels.Entities.Posts
 {
-    public class Post
+    public class Post:BasicEntity.IBase
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -17,6 +17,7 @@ namespace EntityModels.Entities.Posts
         public bool IsActive { get; set; }
         public string Slug { get; set; }
         public int AuthorId { get; set; }
+        public string BaseImage { get; set; }
         public List<PostImage> Images { get; set; } = new List<PostImage>();
         public List<PostKeyword> Keywords { get; set; } = new List<PostKeyword>();
         public List<PostComment> Comments { get; set; } = new List<PostComment>();
@@ -35,8 +36,8 @@ namespace EntityModels.Entities.Posts
             builder.HasMany(x => x.Comments).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Keywords).WithOne(x => x.Post).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
             builder.Property(x => x.Slug).HasMaxLength(400).HasValueGenerator<SlugGenerator>().IsRequired();
-
-
+            builder.Property(x => x.BaseImage).IsRequired().HasMaxLength(450);
+            builder.HasQueryFilter(x => x.IsActive == true);
             builder.HasIndex(x => x.Title);
         }
     }

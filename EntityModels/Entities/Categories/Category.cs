@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityModels.Entities.BasicEntity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace EntityModels.Entities.Categories
 {
-    public class Category
+    public class Category:IIsActive
     {
         public int Id { get; set; }
         public string Text { get; set; }
@@ -21,7 +22,7 @@ namespace EntityModels.Entities.Categories
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Text).HasMaxLength(300).IsRequired();
             builder.HasMany(x => x.Groups).WithOne(x => x.Category).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Cascade);
-
+            builder.HasQueryFilter(x => x.IsActive == true);
         }
     }
 
