@@ -10,17 +10,17 @@
                     <div class="item" >
                         <div class="blog-post">
                             <div class="blog-post-image">
-                                <div class="image"> <a href="blog.html"><img src="/images/blog-post/@item.BaseImage" alt="@item.Title"></a> </div>
+                                <div class="image"> <a asp-route="Article" asp-route-postid="@item.Id" asp-route-slug="@item.Slug"><img src="/images/blog-post/@item.BaseImage" alt="@item.Title"></a> </div>
                             </div>
                             <!-- /.blog-post-image -->
 
                             <div class="blog-post-info text-left" style="direction:rtl;text-align:right">
-                                <h3 class="name"><a href="#">@item.Title</a></h3>
-                                <span class="info">By Jone Doe &nbsp;|&nbsp; @item.PublishDate.ToShortDateString() </span>
+                                <h3 class="name"><a asp-route="Article" asp-route-postid="@item.Id" asp-route-slug="@item.Slug">@item.Title</a></h3>
+                                <span class="info">By Jone Doe &nbsp;|&nbsp; @item.PublishDate.PesrianDay() / @item.PublishDate.PesrianMonth()/@item.PublishDate.PesrianYear()</span>
                                 <p class="text text-wraping" onclick="RevealHiddenOverflow(this);">
                                     @item.Summery
                                 </p>
-                                <a href="#" class="lnk btn btn-primary">ادامه مطلب</a>
+                                <a asp-route="Article" asp-route-postid="@item.Id" asp-route-slug="@item.Slug" class="lnk btn btn-primary">ادامه مطلب</a>
                             </div>
                             <!-- /.blog-post-info -->
 

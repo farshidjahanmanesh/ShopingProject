@@ -22,6 +22,7 @@ namespace UI.InfraStructure
             CreateMap<NavbarDto, NavbarViewModel>();
             CreateMap<NavbarDto.NestedProductGroupDto, NavbarViewModel.NestedProductViewModel>();
             CreateMap<Slider, SliderViewModel>();
+            CreateMap<PostDto, ShowSinglePostViewModel>();
 
         }
     }

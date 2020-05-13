@@ -21,7 +21,7 @@ namespace UI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            
+
             services.AddDbContext<ShopDbContext>(cng =>
             {
 
@@ -33,6 +33,7 @@ namespace UI
             services.AddScoped<ISiteService, SiteService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,30 +43,40 @@ namespace UI
             {
                 app.UseDeveloperExceptionPage();
             }
-            else if(env.IsProduction())
+            else if (env.IsProduction())
             {
 
             }
             app.UseStaticFiles();
 
-           
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-
                 endpoints.MapControllerRoute(
-                    name:"Product",
-                    pattern:"product/{id}/{slug}",
-                    defaults:new { controller="product", action="ShowPost" },
-                    new {id= @"\d+" }
+                    name:"ProductSearch",
+                    pattern: "ProductSearch/{keyword}",
+                    defaults: new { Controller = "product",action= "ProductSearch" }
+                    );
+                endpoints.MapControllerRoute(
+                    name: "Article",
+                    pattern: "article/{postid}/{slug}",
+                    defaults: new { Controller = "Blog", action = "GetPost" },
+                    new { postid = @"\d+" }
                     );
 
                 endpoints.MapControllerRoute(
-                    name:"defualt",
+                    name: "Product",
+                    pattern: "product/{id}/{slug}",
+                    defaults: new { controller = "product", action = "ShowProduct" },
+                    new { id = @"\d+" }
+                    );
+
+                endpoints.MapControllerRoute(
+                    name: "defualt",
                     pattern: "{controller}/{action}/{id?}",
-                    defaults:new { controller="home", action = "index" }
+                    defaults: new { controller = "home", action = "index" }
                     );
             });
         }

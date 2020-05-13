@@ -12,8 +12,16 @@ namespace ServiceLayer.Services.SiteServices
         #region slider
         List<Slider> GetSliders();
         #endregion
+
+
+        #region newsletter
+        bool AddNewsLetter(string Email);
+        #endregion
+
+
+        bool SaveChanges();
     }
-    public class SiteService:ISiteService
+    public class SiteService : ISiteService
     {
         private readonly ShopDbContext ctx;
 
@@ -22,14 +30,42 @@ namespace ServiceLayer.Services.SiteServices
             this.ctx = ctx;
         }
 
+
+
+        #region slider
         public List<Slider> GetSliders()
         {
             return ctx.Slider.ToList();
         }
-
-        #region slider
-
         #endregion
+
+        #region newsletter
+        public bool AddNewsLetter(string Email)
+        {
+            if (Email.Equals(null) || Email.Equals(""))
+            {
+                return false;
+            }
+
+            if (ctx.Newsletter.Any(x => x.Email == Email))
+            {
+                return false;
+            }
+
+            ctx.Newsletter.Add(new NewsLetter()
+            {
+                Email = Email
+            });
+            return true;
+        }
+        #endregion
+
+        public bool SaveChanges()
+        {
+            ctx.SaveChanges();
+            return true;
+        }
+
 
     }
 }

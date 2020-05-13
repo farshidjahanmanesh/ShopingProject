@@ -31,8 +31,9 @@ namespace DataAccess.Context
         public DbSet<ProductKeyword> ProductKeyword { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<ProductGroups> ProductGroups { get; set; }
+        public DbSet<ProductComment> ProductComment { get; set; }
         public DbSet<Slider> Slider { get; set; }
-
+        public DbSet<NewsLetter> Newsletter { get; set; }
         public override int SaveChanges()
         {
             this.ChangeTracker.DetectChanges();

@@ -33,7 +33,7 @@ namespace ServiceLayer.Services.BlogServices
 
 
         #region Comment
-        public Task AddCommentAsync(PostComment comment);
+        public Task AddCommentAsync(PostCommentDto comment);
         public void ActivateComments(IEnumerable<PostComment> activate);
         public void DeleteComment(int id);
         public List<SummeryLastCommentDto> LastComments(int count);
@@ -79,9 +79,10 @@ namespace ServiceLayer.Services.BlogServices
 
         }
 
-        public async Task AddCommentAsync(PostComment comment)
+        public async Task AddCommentAsync(PostCommentDto comment)
         {
-            await _ctx.PostComment.AddAsync(comment);
+            var result = mapper.Map<PostComment>(comment);
+            await _ctx.PostComment.AddAsync(result);
         }
         public void DeleteComment(int id)
         {
@@ -96,7 +97,10 @@ namespace ServiceLayer.Services.BlogServices
         public List<SummeryLastCommentDto> LastComments(int count)
         {
             var len = _ctx.PostComment.Count();
-           var comments= _ctx.PostComment.OrderByDescending(x => x.PublishDate).Skip(len-count>0?len-count:count-len).Take(count);
+           var comments= _ctx.PostComment
+                .OrderByDescending(x => x.PublishDate)
+                .Skip(len-count>0?len-count:0)
+                .Take(count);
             var result = mapper.Map<List<SummeryLastCommentDto>>(comments);
             return result;
         }

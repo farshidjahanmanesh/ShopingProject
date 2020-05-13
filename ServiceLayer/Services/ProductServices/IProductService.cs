@@ -30,6 +30,14 @@ namespace ServiceLayer.Services.ProductServices
         List<NavbarDto> GetNavbarItems();
         #endregion
 
+        #region keyword
+        Dictionary<string, int> GetBestKeywords();
+        #endregion
+
+        #region Comment
+        bool AddComment(ProductCommentDto comment);
+        #endregion
+
         #region base
         Task<int> SaveChangesAsync();
         int SaveChanges();
@@ -75,7 +83,9 @@ namespace ServiceLayer.Services.ProductServices
         public async Task<ProductDto> FindProductAsync(int id)
         {
             var product = await ctx.Product.Where(x => x.Id == id)
-                .Include(x => x.Images).Include(x => x.Keywords).Include(x => x.Comments).Include(x => x.Details).FirstOrDefaultAsync();
+                .Include(x => x.Images).Include(x => x.Keywords)
+                .Include(x => x.Comments).Include(x => x.Details)
+                .Include(x => x.Group).ThenInclude(x => x.Category).FirstOrDefaultAsync();
             return mapper.Map<ProductDto>(product);
         }
 
@@ -88,16 +98,16 @@ namespace ServiceLayer.Services.ProductServices
         public List<ProductDto> FindProducts(int count, int page, string name)
         {
             return mapper.Map<List<ProductDto>>(ctx.Product.AsNoTracking()
-                .Where(x => (name==null||name=="")|| x.Name.Contains(name))
+                .Where(x => (name == null || name == "") || x.Name.Contains(name))
                 .SkipAndTake(page, count, QueryExtension.ProductOrder.date));
         }
         public List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname)
         {
-           var tagProducts= ctx.ProductKeyword.Where(x => (tagname == "" || tagname == null) || x.Text == tagname)
-                .SkipAndTake(page, count, QueryExtension.OrderBy.date);
+            var tagProducts = ctx.ProductKeyword.Where(x => (tagname == "" || tagname == null) || x.Text == tagname)
+                 .SkipAndTake(page, count, QueryExtension.OrderBy.date);
 
             var DtoProducts = mapper.Map<List<FeaturedProductDto>>(tagProducts);
-            DtoProducts.ForEach(x => x.TagName = tagname );
+            DtoProducts.ForEach(x => x.TagName = tagname == null ? "" : tagname);
             return DtoProducts;
         }
         #endregion
@@ -105,11 +115,36 @@ namespace ServiceLayer.Services.ProductServices
         #region category
         public List<NavbarDto> GetNavbarItems()
         {
-            var groups=ctx.Category.Include(x => x.Groups);
+            var groups = ctx.Category.Include(x => x.Groups);
             var result = mapper.Map<List<NavbarDto>>(groups);
             return result;
         }
         #endregion
+
+
+        #region Comment
+        public bool AddComment(ProductCommentDto comment)
+        {
+            var MapperResult = mapper.Map<ProductComment>(comment);
+            ctx.ProductComment.Add(MapperResult);
+            return true;
+            //            ctx.ProductComment.Add(comment);
+
+        }
+        #endregion
+
+
+
+        #region keyword
+        public Dictionary<string, int> GetBestKeywords()
+        {
+            var res = ctx.ProductKeyword.GroupBy(x => x.Text).Take(10)
+                .Select(e => new { e.Key, count = e.Count() })
+                .ToDictionary(e => e.Key, e => e.count);
+            return res;
+        }
+        #endregion
+
 
         #region base
         public int SaveChanges()

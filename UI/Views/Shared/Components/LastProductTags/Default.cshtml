@@ -1,0 +1,33 @@
+﻿@model Dictionary<string, int>
+
+
+<style>
+    .circle-count {
+        border-radius: 10px;
+        background-color: blue;
+        color: white;
+        padding: 4px;
+        margin-left: 3px;
+    }
+</style>
+
+<div class="sidebar-widget product-tag wow fadeInUp" style="margin-top:10px;direction:rtl;text-align:right;">
+    <h3 class="section-title">پرتکرار ترین کلمات کلیدی محصولات</h3>
+    <div class="sidebar-widget-body outer-top-xs">
+        <div class="tag-list">
+            @if (Model != null)
+            {
+                @foreach (var item in Model.OrderByDescending(x => x.Value))
+                {
+                    <a class="item" title="@item.Key" asp-route-keyword="@item.Key" asp-route="ProductSearch">
+                        @item.Key
+                        <span class="circle-count">@item.Value</span>
+                    </a>
+                }
+            }
+
+        </div>
+        <!-- /.tag-list -->
+    </div>
+    <!-- /.sidebar-widget-body -->
+</div>

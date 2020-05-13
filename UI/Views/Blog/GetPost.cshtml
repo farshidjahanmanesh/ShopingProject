@@ -1,0 +1,172 @@
+﻿@model ShowSinglePostViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+    <div class="col-md-9" style="direction:rtl;text-align:right;margin-top:15px;border:medium 1px 1px">
+        <div class="blog-post wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+            <img style="width: 100%" class="img-responsive" src="/images/blog-post/@Model.BaseImage" alt="@Model.Title">
+            <h1>@Model.Title</h1>
+            <span class="author">فرشید جهان منش</span>
+            <span class="review">@Model.Comments?.Count() نظر</span>
+            <span class="date-time">@Model.PublishDate.PesrianDay() / @Model.PublishDate.PesrianMonth() /@Model.PublishDate.PesrianYear()</span>
+
+            <div>
+
+                @Html.Raw(@Model.FullText)
+
+
+            </div>
+
+            <div class="social-media">
+                <span>اشتراک گذاری پست:</span>
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-linkedin"></i></a>
+                <a href="#"><i class="fa fa-rss"></i></a>
+                <a href="#" class="hidden-xs"><i class="fa fa-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="blog-post-author-details wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+            <div class="row">
+                <div class="col-md-2">
+                    <img src="/images/testimonials/member3.png" alt="Responsive image" class="img-circle img-responsive">
+                </div>
+                <div class="col-md-10">
+                    <h4>فرشید جهان منش</h4>
+
+                    <span class="author-job">برنامه نویس</span>
+                    <p>اطلاعاتی درباره نویسنده این مطلب در اینجا منتشر میشود</p>
+                </div>
+            </div>
+        </div>
+        <div class="blog-review wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="title-review-comments">@Model.Comments?.Count() نظر</h3>
+                </div>
+                @foreach (var item in Model.Comments?.OrderByDescending(x => x.PublishDate))
+                {
+                    <div class="col-md-10 col-sm-10 blog-comments outer-bottom-xs">
+                        <div class="blog-comments inner-bottom-xs">
+                            <h4>@item.Name</h4>
+                            <span class="review-action pull-right">
+                                @item.PublishDate.PersionDayAgo() روز پیش/
+                                @*<a href="#"> Repost</a> /
+                                <a href="#"> Reply</a>*@
+                            </span>
+                            <p>
+                                @item.Text
+                            </p>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="blog-write-comment outer-bottom-xs outer-top-xs">
+            <div class="row" style="direction:rtl;text-align:right">
+                <div class="col-md-12">
+                    <h4 style="text-align:center">قرار دادن نظر</h4>
+                </div>
+                <div class="col-md-6">
+                    <form class="register-form" role="form">
+                        <div class="form-group">
+                            <label class="info-title" for="exampleInputEmail1">ایمیل <span>*</span></label>
+                            <input type="email" class="form-control unicase-form-control text-input" id="CommentEmail" placeholder="ایمیل آدرس شما">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form class="register-form" role="form">
+                        <div class="form-group">
+                            <label class="info-title" for="exampleInputName">نام شما <span>*</span></label>
+                            <input type="text" class="form-control unicase-form-control text-input" id="Commentname" placeholder="نام و نام خانوادگی شما">
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="col-md-12">
+                    <form class="register-form" role="form">
+                        <div class="form-group">
+                            <label class="info-title" for="exampleInputComments">متن نظر <span>*</span></label>
+                            <textarea class="form-control unicase-form-control" id="ComText"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-12 outer-bottom-small m-t-20">
+                    <button onclick="SendComment()" type="button" class="btn-upper btn btn-primary checkout-page-button">ارسال نظر</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-widget product-tag wow fadeInUp animated" style="margin-top: 10px; direction: rtl; text-align: right; visibility: visible; animation-name: fadeInUp;">
+            <h3 class="section-title">کلمات کلیدی این پست</h3>
+            <div class="sidebar-widget-body outer-top-xs">
+                <div class="tag-list">
+
+                    @foreach (var item in Model.Keywords)
+                    {
+                        <a class="item" title="@item.Text" href="category.html">
+                            @item.Text
+                        </a>
+                    }
+
+
+                </div>
+                <!-- /.tag-list -->
+            </div>
+            <!-- /.sidebar-widget-body -->
+        </div>
+
+    </div>
+
+
+@section scripts{ 
+
+<script>
+    function SendComment() {
+        alert(1);
+        var CommentData = {
+            Email: $('#CommentEmail').val().trim(),
+            name: $('#Commentname').val().trim(),
+            Text: $('#ComText').val().trim()
+        };
+
+        alert(2);
+
+        $.ajax({
+            url: '@Url.Action("SaveComment","blog",new { postid=Model.Id})',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(CommentData),
+            success: function (result) {
+                if (result == "email is not valid") {
+                    $('#myModal').modal('hide');
+                    $('#myModal').modal('show');
+                    $('.modal-title').text('عدم پذیرش');
+                    $('.modal-body-ms').text('ایمیل وارد شده صحیح نمیباشد');
+                } else if (result == "success") {
+                      $('#myModal').modal('hide');
+                        $('#myModal').modal('show');
+                        $('.modal-title').text('پذیرش');
+                        $('.modal-body-ms').text('نظر شما با موفقیت ثبت شد و پس از تایید مدیریت ، در سایت نمایش داده خواهد شد');
+                }
+                else {
+                    $('#myModal').modal('hide');
+                    $('#myModal').modal('show');
+                    $('.modal-title').text('عدم پذیرش');
+                    $('.modal-body-ms').text(result);
+                }
+            }
+
+        });
+
+    }
+</script>
+
+}

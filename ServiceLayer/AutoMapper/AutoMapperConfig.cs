@@ -31,23 +31,6 @@ namespace ServiceLayer.AutoMapper
                         return !(destProperty == null);
                     }
 
-                    //if(sourceProperty is DateTime)
-                    //{
-                    //    var time = (DateTime)sourceProperty ;
-                    //    var result=time.Equals((DateTime)destProperty);
-                    //    if (result)
-                    //        return false;
-                    //    return true;
-                    //}
-
-                    //if (sourceProperty is Int32 && (int)sourceProperty==0)
-                    //{
-                    //    if ((int)destProperty != 0)
-                    //    {
-                    //        return false;
-                    //    }
-                    //}
-
                     return !sourceProperty.Equals(destProperty);
                 });
             });
@@ -69,11 +52,15 @@ namespace ServiceLayer.AutoMapper
         static  AutoMapperConfig()
         {
             config = new MapperConfiguration(cfg => {
-                
+                cfg.CreateMap<ProductGroups, ProductGroupsDto>().MapOnlyIfChanged();
+                cfg.CreateMap<ProductGroupsDto, ProductGroups>().MapOnlyIfChanged();
+
                 cfg.CreateMap<PostSummeryDto, Post>().MapOnlyIfChanged();
                 cfg.CreateMap<Post, PostSummeryDto>().MapOnlyIfChanged();
                 cfg.CreateMap<PostDto, Post>().MapOnlyIfChanged();
                 cfg.CreateMap<Post, PostDto>().MapOnlyIfChanged();
+                cfg.CreateMap<PostComment, PostCommentDto>().MapOnlyIfChanged();
+                cfg.CreateMap<PostCommentDto, PostComment>().MapOnlyIfChanged();
                 cfg.CreateMap<Product, ProductDto>().MapOnlyIfChanged();
                 cfg.CreateMap<ProductDto, Product>().MapOnlyIfChanged();
                 cfg.CreateMap<FeaturedProductDto, ProductDto>().MapOnlyIfChanged();

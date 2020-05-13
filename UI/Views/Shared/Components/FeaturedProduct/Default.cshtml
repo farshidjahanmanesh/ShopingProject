@@ -12,7 +12,7 @@
                 <div class="products">
                     <div class="product">
                         <div class="product-image">
-                            <div class="image"> <a asp-action="ShowPost" asp-controller="product" asp-route-id="@item.Id" asp-route-slug="@item.Slug"><img src="/images/products/@item.BaseImage" alt="@item.Name"></a> </div>
+                            <div class="image"> <a asp-route="Product" asp-route-id="@item.Id" asp-route-slug="@item.Slug"><img src="/images/products/@item.BaseImage" alt="@item.Name"></a> </div>
                             <!-- /.image -->
 
                             <div class="tag hot"><span>ویژه</span></div>
@@ -20,7 +20,7 @@
                         <!-- /.product-image -->
 
                         <div class="product-info text-left">
-                            <h3 class="name" style="text-align:center"><a asp-action="ShowPost" asp-controller="product" asp-route-id="@item.Id" asp-route-slug="@item.Slug">@item.Name</a></h3>
+                            <h3 class="name" style="text-align:center"><a asp-route="Product" asp-route-id="@item.Id" asp-route-slug="@item.Slug">@item.Name</a></h3>
                            
                             <div class="description"></div>
                             <div class="product-price" style="text-align:center"> <span class="price">@item.Price ريال </span>  </div>
