@@ -1,0 +1,43 @@
+﻿@model ShopCartViewComponent.ListShopingCart
+
+
+    <div class="dropdown dropdown-cart">
+        <a href="#" class="dropdown-toggle lnk-cart" data-toggle="dropdown">
+            <div class="items-cart-inner" style="text-align:right;direction:rtl"> 
+                <div class="top-cart">  </div>
+
+                <div class="total-price-basket"> <span class="lbl"> @Model.count محصول /</span> <span class="total-price"> <span class="value">@Model.TotalPrice.ToRial()</span> </span> </div>
+            </div>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                @foreach (var item in Model.Products)
+                {
+                    <div class="cart-item product-summary" style="margin-bottom:5px;">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <div class="image"> <a href="detail.html"><img src="/images/products/@item.BaseImage" alt=""></a> </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <h3 class="name"><a href="index8a95.html?page-detail">@item.Name</a></h3>
+                                <div class="price">@item.Price.ToRial()  * @item.CountBuy </div>
+                            </div>
+                            <div class="col-xs-1 action"> <a onclick="RemoveFromCart(@item.Id)"><i class="fa fa-trash"></i></a> </div>
+                        </div>
+                    </div>
+                }
+                <!-- /.cart-item -->
+                <div class="clearfix"></div>
+                <hr>
+                <div class="clearfix cart-total">
+                    <div class="pull-right"> <span class="text">مجموع هزینه :</span><span class='price'> @Model.TotalPrice.ToRial() </span> </div>
+                    <div class="clearfix"></div>
+                    <a  href="checkout.html" class="btn btn-upper btn-primary btn-block m-t-20">خرید نهایی</a>
+                </div>
+                <!-- /.cart-total-->
+
+            </li>
+        </ul>
+        <!-- /.dropdown-menu-->
+    </div>
+

@@ -12,21 +12,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ServiceLayer.QueryExtenstion.QueryExtension;
 
 namespace ServiceLayer.Services.ProductServices
 {
     public interface IProductService
     {
         #region product
+         Task<ProductDto> FindProductAsyncWithOutDependencies(int id);
         Task<TaskStatus> AddProductAsync(ProductDto pr);
         bool RemoveProduct(int id);
         void UpdateProduct(ProductDto product);
         Task<ProductDto> FindProductAsync(int id);
         List<ProductDto> FindProducts(int count, int page, string name);
-        List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname);
+        List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname, ProductOrder orderby = ProductOrder.dateDes);
+        int TotalProductByKeywordCount(string tagname);
+
+
         #endregion
 
         #region category
+        public int ProductGroupCount(int groupid);
+        public List<FeaturedProductDto> FindProductWithGroupId(int groupId, int page, int count, ProductOrder orderby = ProductOrder.dateDes);
         List<NavbarDto> GetNavbarItems();
         #endregion
 
@@ -56,7 +63,13 @@ namespace ServiceLayer.Services.ProductServices
         }
 
         #region product
-
+        public int TotalProductByKeywordCount(string tagname)
+        {
+            var ProductCount = ctx.ProductKeyword
+                .Where(x => (tagname == "" || tagname == null) || x.Text == tagname)
+                    .Count();
+            return ProductCount;
+        }
         public async Task<TaskStatus> AddProductAsync(ProductDto pr)
         {
             if (!CheckValidation.CheckObjectIsValid<ProductDto>(pr))
@@ -88,6 +101,11 @@ namespace ServiceLayer.Services.ProductServices
                 .Include(x => x.Group).ThenInclude(x => x.Category).FirstOrDefaultAsync();
             return mapper.Map<ProductDto>(product);
         }
+        public async Task<ProductDto> FindProductAsyncWithOutDependencies(int id)
+        {
+            var product = await ctx.Product.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return mapper.Map<ProductDto>(product);
+        }
 
         public void UpdateProduct(ProductDto product)
         {
@@ -99,12 +117,13 @@ namespace ServiceLayer.Services.ProductServices
         {
             return mapper.Map<List<ProductDto>>(ctx.Product.AsNoTracking()
                 .Where(x => (name == null || name == "") || x.Name.Contains(name))
-                .SkipAndTake(page, count, QueryExtension.ProductOrder.date));
+                .SkipAndTake(page, count, QueryExtension.ProductOrder.dateDes));
         }
-        public List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname)
+        public List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname, ProductOrder orderby = ProductOrder.dateDes)
         {
-            var tagProducts = ctx.ProductKeyword.Where(x => (tagname == "" || tagname == null) || x.Text == tagname)
-                 .SkipAndTake(page, count, QueryExtension.OrderBy.date);
+            var tagProducts = ctx.ProductKeyword.AsNoTracking()
+                .Where(x => (tagname == "" || tagname == null) || x.Text == tagname).Select(x => x.Product)
+                 .SkipAndTake(page, count, orderby).ToList();
 
             var DtoProducts = mapper.Map<List<FeaturedProductDto>>(tagProducts);
             DtoProducts.ForEach(x => x.TagName = tagname == null ? "" : tagname);
@@ -115,9 +134,22 @@ namespace ServiceLayer.Services.ProductServices
         #region category
         public List<NavbarDto> GetNavbarItems()
         {
-            var groups = ctx.Category.Include(x => x.Groups);
+            var groups = ctx.Category.AsNoTracking().Include(x => x.Groups);
             var result = mapper.Map<List<NavbarDto>>(groups);
             return result;
+        }
+        public List<FeaturedProductDto> FindProductWithGroupId(int groupId, int page, int count, ProductOrder orderby = ProductOrder.dateDes)
+        {
+            var QueryResult = ctx.Product.AsNoTracking().Where(x => x.GroupId == groupId)
+                 .SkipAndTake(page, count, orderby).ToList();
+            var DtoProducts = mapper.Map<List<FeaturedProductDto>>(QueryResult);
+            var GroupName = ctx.ProductGroups.Find(groupId).Text;
+            DtoProducts.ForEach(x => x.TagName = GroupName == null ? "" : GroupName);
+            return DtoProducts;
+        }
+        public int ProductGroupCount(int groupid)
+        {
+            return ctx.Product.Where(x => x.GroupId == groupid).Count();
         }
         #endregion
 
@@ -138,7 +170,7 @@ namespace ServiceLayer.Services.ProductServices
         #region keyword
         public Dictionary<string, int> GetBestKeywords()
         {
-            var res = ctx.ProductKeyword.GroupBy(x => x.Text).Take(10)
+            var res = ctx.ProductKeyword.AsNoTracking().GroupBy(x => x.Text).Take(10)
                 .Select(e => new { e.Key, count = e.Count() })
                 .ToDictionary(e => e.Key, e => e.count);
             return res;

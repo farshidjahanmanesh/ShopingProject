@@ -29,10 +29,10 @@
                             <div class="dropdown dropdown-small dropdown-med dropdown-white inline">
                                 <button data-toggle="dropdown" type="button" class="btn dropdown-toggle"> @Model.OrderSelect <span class="caret"></span> </button>
                                 <ul role="menu" class="dropdown-menu">
-                                    <li role="presentation"><a href="@Url.Action("ProductSearch","Product",new { keyword=Model.Key,order=2})">قیمت : صعودی</a></li>
-                                    <li role="presentation"><a href="@Url.Action("ProductSearch","Product",new { keyword=Model.Key,order=3})">قیمت : نزولی</a></li>
-                                    <li role="presentation"><a href="@Url.Action("ProductSearch","Product",new { keyword=Model.Key,order=0})">تاریخ : جدیدترین</a></li>
-                                    <li role="presentation"><a href="@Url.Action("ProductSearch","Product",new { keyword=Model.Key,order=1})">تاریخ : قدیم ترین</a></li>
+                                    <li role="presentation"><a href="@Url.Action("CategoryProductSearch","Product",new { id=Model.Key,order=2})">قیمت : صعودی</a></li>
+                                    <li role="presentation"><a href="@Url.Action("CategoryProductSearch","Product",new { id=Model.Key,order=3})">قیمت : نزولی</a></li>
+                                    <li role="presentation"><a href="@Url.Action("CategoryProductSearch","Product",new { id=Model.Key,order=0})">تاریخ : جدیدترین</a></li>
+                                    <li role="presentation"><a href="@Url.Action("CategoryProductSearch","Product",new { id=Model.Key,order=1})">تاریخ : قدیم ترین</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -175,4 +175,5 @@
     <!-- /.search-result-container -->
 
 </div>
+
 

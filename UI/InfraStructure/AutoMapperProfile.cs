@@ -15,6 +15,7 @@ namespace UI.InfraStructure
     {
         public AutoMapperProfile()
         {
+            CreateMap<ProductDto, CartProductViewModel>();
             CreateMap<ProductDto, NewProductsViewModel>();
             CreateMap<FeaturedProductDto, FeaturedProductViewModel>();
             CreateMap<PostSummeryDto, PostSummeryViewModel>();

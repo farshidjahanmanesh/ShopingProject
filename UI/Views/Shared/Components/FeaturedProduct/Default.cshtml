@@ -23,7 +23,7 @@
                             <h3 class="name" style="text-align:center"><a asp-route="Product" asp-route-id="@item.Id" asp-route-slug="@item.Slug">@item.Name</a></h3>
                            
                             <div class="description"></div>
-                            <div class="product-price" style="text-align:center"> <span class="price">@item.Price ريال </span>  </div>
+                            <div class="product-price" style="text-align:center"> <span class="price">@item.Price.ToRial() </span>  </div>
                             <!-- /.product-price -->
 
                         </div>
@@ -32,7 +32,7 @@
                             <div class="action">
                                 <ul class="list-unstyled">
                                     <li class="add-cart-button btn-group">
-                                        <button class="btn btn-primary icon" data-toggle="dropdown" type="button"> <i class="fa fa-shopping-cart"></i> </button>
+                                        <button onclick="AddFromCart(@item.Id)" class="btn btn-primary icon" data-toggle="dropdown" type="button"> <i class="fa fa-shopping-cart"></i> </button>
                                         <button class="btn btn-primary cart-btn" type="button">اضافه کردن به سبد خرید</button>
                                     </li>
                                     </ul>

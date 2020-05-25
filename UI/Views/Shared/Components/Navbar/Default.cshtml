@@ -28,11 +28,13 @@
                                                         @foreach (var subitem in item.Groups)
                                                         {
                                                             <div class="col-xs-12 col-sm-6 col-md-2 col-menu">
-                                                                <h2 class="title">@subitem.Text</h2>
+                                                                <h2 class="title">
+                                                                    <a  asp-route="categorysearch" asp-route-id="@subitem.Id">@subitem.Text</a>
+                                                                </h2>
                                                             </div>
                                                         }
                                                         <!-- /.col -->
-                                                        <div style="margin:0px;padding:0px;"  class="col-xs-12 col-sm-6 col-md-4 col-menu banner-image"> <img class="img-responsive" src="/images/banners/top-menu-banner.jpg" alt=""> </div>
+                                                        <div style="margin:0px;padding:0px;" class="col-xs-12 col-sm-6 col-md-4 col-menu banner-image"> <img class="img-responsive" src="/images/banners/top-menu-banner.jpg" alt=""> </div>
                                                         <!-- /.yamm-content -->
                                                     </div>
                                                 </div>

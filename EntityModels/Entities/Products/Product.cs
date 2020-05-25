@@ -9,7 +9,7 @@ using System.Text;
 
 namespace EntityModels.Entities.Products
 {
-    public class Product:IBase
+    public class Product : IBase
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -32,7 +32,7 @@ namespace EntityModels.Entities.Products
 
     }
 
-    public class ProductConfig: IEntityTypeConfiguration<Product>
+    public class ProductConfig : IEntityTypeConfiguration<Product>
     {
 
         public void Configure(EntityTypeBuilder<Product> builder)
@@ -46,9 +46,9 @@ namespace EntityModels.Entities.Products
             builder.Property(x => x.Slug).HasMaxLength(500).HasValueGenerator<SlugGenerator>().IsRequired();
             builder.HasIndex(x => x.Price);
             builder.HasIndex(x => x.PublishDate);
-           builder.Property(x => x.Summery).IsRequired();
+            builder.Property(x => x.Summery).IsRequired();
             builder.Property(x => x.BaseImage).IsRequired().HasMaxLength(450);
-            builder.HasQueryFilter(x => x.IsActive == true);
+           // builder.HasQueryFilter(x => x.IsActive == true);
         }
     }
 

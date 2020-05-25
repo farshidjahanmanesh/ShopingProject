@@ -44,6 +44,7 @@
                             @{
                                 int counter = 1;
                             }
+                        
                             <div class="single-product-gallery-item" id="slide@(counter)">
                                 <a data-lightbox="image-@counter" data-title="Gallery" href="/images/products/@Model.BaseImage">
                                     <img class="img-responsive" alt="" src="/images/blank.gif" data-echo="/images/products/@Model.BaseImage" />
@@ -102,8 +103,8 @@
                         <div class="rating-reviews m-t-20">
                             <div class="row">
                                 @*<div class="col-sm-3">
-                                    <div class="rating rateit-small"></div>
-                                </div>*@
+                                        <div class="rating rateit-small"></div>
+                                    </div>*@
                                 <div class="col-sm-8">
                                     <div class="reviews">
                                         <a href="#" class="lnk">(@Model.Comments.Count نظر)</a>
@@ -131,22 +132,22 @@
                             <div class="row">
 
                                 @*<div class="col-sm-6">
-                                    <div class="favorite-button m-t-10">
-                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Wishlist" href="#">
-                                            <i class="fa fa-heart"></i>
-                                        </a>
-                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Add to Compare" href="#">
-                                            <i class="fa fa-signal"></i>
-                                        </a>
-                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="E-mail" href="#">
-                                            <i class="fa fa-envelope"></i>
-                                        </a>
-                                    </div>
-                                </div>*@
+                                        <div class="favorite-button m-t-10">
+                                            <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Wishlist" href="#">
+                                                <i class="fa fa-heart"></i>
+                                            </a>
+                                            <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Add to Compare" href="#">
+                                                <i class="fa fa-signal"></i>
+                                            </a>
+                                            <a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="E-mail" href="#">
+                                                <i class="fa fa-envelope"></i>
+                                            </a>
+                                        </div>
+                                    </div>*@
 
                                 <div class="col-sm-6">
                                     <div class="price-box">
-                                        <span class="price">@(String.Format("{0:0.##}", Model.Price)) ريال</span>
+                                        <span class="price">@Model.Price.ToRial()</span>
                                     </div>
                                 </div>
 
@@ -159,7 +160,7 @@
                             <div class="row">
 
                                 <div class="col-sm-3">
-                                    <input type="number" id="replyNumber" min="0" step="1" data-bind="value:replyNumber" style="width:100%" />
+                                    <input value="1" type="number" id="replyNumber" min="1" max="@Model.Count" step="1" data-bind="value:replyNumber" style="width:100%" />
                                 </div>
 
 
@@ -168,8 +169,8 @@
                                     <span class="label">تعداد :</span>
                                 </div>
 
-                                <div class="col-sm-7">
-                                    <a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart inner-right-vs"></i> اضافه کردن به سبر خرید</a>
+                                <div onclick="AddProductToCart()" class="col-sm-7">
+                                    <a class="btn btn-primary"><i class="fa fa-shopping-cart inner-right-vs"></i> اضافه کردن به سبر خرید</a>
                                 </div>
 
 
@@ -344,7 +345,7 @@
 
                     @foreach (var item in Model.Keywords)
                     {
-                        <a class="item" title="@item.Text" asp-route="ProductSearch"  asp-route-keyword="@item.Text">
+                        <a class="item" title="@item.Text" asp-route="ProductSearch" asp-route-keyword="@item.Text">
                             @item.Text
                         </a>
                     }
@@ -409,7 +410,48 @@
         });
     }
 
-    </script>
 
+
+
+
+    </script>
+    <script>
+
+        
+        function AddProductToCart() {
+            
+            if ($('#replyNumber').val().trim() >@Model.Count) {
+                 $('#myModal').modal('hide');
+                 $('#myModal').modal('show');
+                 $('.modal-title').text('تعداد انتخابی از تعداد کل موجودی بیشتر است');
+                $('.modal-body-ms').text(result);
+                return;
+            }
+            AddFromCart(@Model.Id, $('#replyNumber').val().trim());
+
+            @*var ShopCartCoockie = {
+                Productid : '',
+                count : $('#replyNumber').val().trim()
+            };
+
+            $.ajax({
+                url: '@Url.Action("AddToCoockie","product")',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(ShopCartCoockie),
+                success: function (result) {
+                    if (result == "add") {
+                        var container = $("#shopcart");
+                        $.get("/product/ShopCartRefresh", function (data) { container.html(data); });
+
+                    } else if (result == "false") {
+
+                    }
+                }
+            });*@
+        }
+
+
+    </script>
 
 }

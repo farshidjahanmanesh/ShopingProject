@@ -38,5 +38,7 @@ namespace UI.Controllers
             service.SaveChanges();
             return result ? Json("accept") : Json("reject");
         }
+
+        
     }
 }

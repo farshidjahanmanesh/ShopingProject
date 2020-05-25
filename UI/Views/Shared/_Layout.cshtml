@@ -34,6 +34,8 @@
 </head>
 <body class="cnt-home">
 
+    <mini-profiler />
+
     <style>
         .text-wraping:hover {
             text-overflow: clip;
@@ -107,7 +109,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-3 logo-holder">
                         <!-- ============================================================= LOGO ============================================================= -->
-                        <div class="logo"> <a href="home.html"> <img src="/images/logo.png" alt="logo"> </a> </div>
+                        <div class="logo"> <a href="@Url.Action("index","home")"> <img src="/images/logo.png" alt="logo"> </a> </div>
                         <!-- /.logo -->
                         <!-- ============================================================= LOGO : END ============================================================= -->
                     </div>
@@ -141,45 +143,10 @@
                     </div>
                     <!-- /.top-search-holder -->
 
-                    <div class="col-xs-12 col-sm-12 col-md-3 animate-dropdown top-cart-row">
+                    <div id="shopcart" class="col-xs-12 col-sm-12 col-md-3 animate-dropdown top-cart-row">
                         <!-- ============================================================= SHOPPING CART DROPDOWN ============================================================= -->
+                        @await Component.InvokeAsync("ShopCart")
 
-                        <div class="dropdown dropdown-cart">
-                            <a href="#" class="dropdown-toggle lnk-cart" data-toggle="dropdown">
-                                <div class="items-cart-inner">
-                                    <div class="top-cart">  </div>
-
-                                    <div class="total-price-basket"> <span class="lbl">2 items /</span> <span class="total-price"> <span class="sign">$</span><span class="value">600.00</span> </span> </div>
-                                </div>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <div class="cart-item product-summary">
-                                        <div class="row">
-                                            <div class="col-xs-4">
-                                                <div class="image"> <a href="detail.html"><img src="/images/cart.jpg" alt=""></a> </div>
-                                            </div>
-                                            <div class="col-xs-7">
-                                                <h3 class="name"><a href="index8a95.html?page-detail">Simple Product</a></h3>
-                                                <div class="price">$600.00</div>
-                                            </div>
-                                            <div class="col-xs-1 action"> <a href="#"><i class="fa fa-trash"></i></a> </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.cart-item -->
-                                    <div class="clearfix"></div>
-                                    <hr>
-                                    <div class="clearfix cart-total">
-                                        <div class="pull-right"> <span class="text">Sub Total :</span><span class='price'>$600.00</span> </div>
-                                        <div class="clearfix"></div>
-                                        <a href="checkout.html" class="btn btn-upper btn-primary btn-block m-t-20">Checkout</a>
-                                    </div>
-                                    <!-- /.cart-total-->
-
-                                </li>
-                            </ul>
-                            <!-- /.dropdown-menu-->
-                        </div>
                         <!-- /.dropdown-cart -->
                         <!-- ============================================================= SHOPPING CART DROPDOWN : END============================================================= -->
                     </div>
@@ -233,19 +200,16 @@
 
 
                     <!-- ============================================== HOT DEALS ============================================== -->
-                   
                     <!-- ============================================== HOT DEALS: END ============================================== -->
                     <!-- ============================================== SPECIAL OFFER ============================================== -->
-
                     <!-- /.sidebar-widget -->
                     <!-- ============================================== SPECIAL OFFER : END ============================================== -->
                     <!-- ============================================== PRODUCT TAGS ============================================== -->
-                    @await  Component.InvokeAsync("LastProductTags")
+                    @await Component.InvokeAsync("LastProductTags")
 
                     <!-- /.sidebar-widget -->
                     <!-- ============================================== PRODUCT TAGS : END ============================================== -->
                     <!-- ============================================== SPECIAL DEALS ============================================== -->
-
                     <!-- /.sidebar-widget -->
                     <!-- ============================================== SPECIAL DEALS : END ============================================== -->
                     <!-- ============================================== NEWSLETTER ============================================== -->
@@ -492,7 +456,7 @@
     <script type="text/javascript">
 
 
-        
+
 
         function NewsLetterSign() {
 
@@ -523,7 +487,7 @@
                         $('.modal-body-ms').text('در ثبت نام شما مشکلی به وجود آمده است.لطفا مدتی دیگر مجددا امتحان فرمایید. (اگر شما قبلا ثبت نام انجام داده اید ، ثبت نام مجدد نیاز نیست) ');
                     }
 
-                    
+
                     console.log(msg);
                 },
                 error: function (req, status, error) {
@@ -543,7 +507,53 @@
         }
     </script>
 
-    @RenderSection("scripts",false)
+    <script>
+        function AddFromCart(id,count=1) {
+
+            var ShopCartCoockie = {
+                Productid: String(id),
+                count: String(count)
+            };
+            $.ajax({
+                 url: '@Url.Action("AddToCoockie","product")',
+                contentType: 'application/json',
+                data: JSON.stringify(ShopCartCoockie),
+                type: 'post',
+                success: function (result) {
+                    if (result == "add") {
+                        var container = $("#shopcart");
+                        $.get("/product/ShopCartRefresh", function (data) { container.html(data); });
+
+                    } else if (result == "false") {
+                        $('#myModal').modal('hide');
+                        $('#myModal').modal('show');
+                        $('.modal-title').text('افزودن به سبد خرید مقدور نمیباشد');
+                        $('.modal-body-ms').text(result);
+                    }
+                }
+            });
+        }
+
+
+        function RemoveFromCart(id) {
+
+            $.ajax({
+                 url: '@Url.Action("RemoveFromCookie","product")',
+                contentType: 'application/json',
+                data: JSON.stringify(id),
+                type: 'post',
+                success: function (result) {
+                    if (result == "remove") {
+                        var container = $("#shopcart");
+                        $.get("/product/ShopCartRefresh", function (data) { container.html(data); });
+                       
+                    }
+                }
+            });
+        }
+    </script>
+
+    @RenderSection("scripts", false)
 
 </body>
 

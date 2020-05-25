@@ -130,14 +130,12 @@
 
 <script>
     function SendComment() {
-        alert(1);
         var CommentData = {
             Email: $('#CommentEmail').val().trim(),
             name: $('#Commentname').val().trim(),
             Text: $('#ComText').val().trim()
         };
 
-        alert(2);
 
         $.ajax({
             url: '@Url.Action("SaveComment","blog",new { postid=Model.Id})',

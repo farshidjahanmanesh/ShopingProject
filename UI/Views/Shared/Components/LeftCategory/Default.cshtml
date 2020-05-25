@@ -20,7 +20,7 @@
                                         <ul style="text-align:right;direction:rtl">
                                             @foreach (var subitem in item.Groups)
                                             {
-                                                <li><a href="#">@subitem.Text</a></li>
+                                                <li><a asp-route="categorysearch" asp-route-id="@subitem.Id">@subitem.Text</a></li>
                                             }
                                         </ul>
                                     </div>

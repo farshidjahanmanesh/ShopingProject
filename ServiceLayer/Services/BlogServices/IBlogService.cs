@@ -97,7 +97,7 @@ namespace ServiceLayer.Services.BlogServices
         public List<SummeryLastCommentDto> LastComments(int count)
         {
             var len = _ctx.PostComment.Count();
-           var comments= _ctx.PostComment
+           var comments= _ctx.PostComment.AsNoTracking()
                 .OrderByDescending(x => x.PublishDate)
                 .Skip(len-count>0?len-count:0)
                 .Take(count);

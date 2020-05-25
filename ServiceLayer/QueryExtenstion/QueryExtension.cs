@@ -10,19 +10,28 @@ namespace ServiceLayer.QueryExtenstion
     {
         public enum ProductOrder
         {
-            date,alpha
+            dateDes,dateAs, alpha, priceDes,priceAs
         }
 
-        public static IQueryable<Product> SkipAndTake(this IQueryable<ProductKeyword> query, int page, int count, OrderBy order)
+        public static IQueryable<Product> SkipAndTake(this IQueryable<ProductKeyword> query, int page, int count, ProductOrder order)
         {
             switch (order)
             {
-                case OrderBy.date:
-                    return query.Include(x=>x.Product).Select(x=>x.Product).OrderByDescending(x=>x.PublishDate).Skip(page * count).Take(count);
+                case ProductOrder.dateDes:
+                    return query.Include(x => x.Product).Select(x => x.Product).OrderByDescending(x => x.PublishDate).Skip(page * count).Take(count);
 
-                case OrderBy.alpha:
+                case ProductOrder.alpha:
                     new NotImplementedException();
                     break;
+
+                case ProductOrder.dateAs:
+                    return query.Include(x => x.Product).Select(x => x.Product).OrderBy(x => x.PublishDate).Skip(page * count).Take(count);
+
+                case ProductOrder.priceAs:
+                    return query.Include(x => x.Product).Select(x => x.Product).OrderBy(x => x.Price).Skip(page * count).Take(count);
+
+                case ProductOrder.priceDes:
+                    return query.Include(x => x.Product).Select(x => x.Product).OrderByDescending(x => x.Price).Skip(page * count).Take(count);
 
             }
             return null;
@@ -32,13 +41,21 @@ namespace ServiceLayer.QueryExtenstion
         {
             switch (order)
             {
-                case ProductOrder.date:
+                case ProductOrder.dateDes:
                     return query.OrderByDescending(x => x.PublishDate).Skip(page * count).Take(count);
+
+                case ProductOrder.dateAs:
+                    return query.OrderBy(x => x.PublishDate).Skip(page * count).Take(count);
 
                 case ProductOrder.alpha:
                     new NotImplementedException();
                     break;
 
+                case ProductOrder.priceDes:
+                    return query.OrderByDescending(x=>x.Price).Skip(page * count).Take(count);
+
+                case ProductOrder.priceAs:
+                    return query.OrderBy(x => x.Price).Skip(page * count).Take(count);
             }
             return query;
         }

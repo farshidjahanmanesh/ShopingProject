@@ -1,0 +1,91 @@
+﻿@model UIPagingViewComponent.Paging
+@{
+    var urlTemplate = Url.Action() + "?page={0}";
+    var request = ViewContext.HttpContext.Request;
+    foreach (var key in request.Query.Keys)
+    {
+        if (key == "page")
+        {
+            continue;
+        }
+
+        urlTemplate += "&" + key + "=" + request.Query[key];
+    }
+}
+
+<div class="clearfix filters-container">
+    <div class="text-right">
+        <div class="pagination-container">
+            <ul class="list-inline list-unstyled">
+                <li class="prev"><a href="@urlTemplate.Replace("{0}", "0")"><i class="fa fa-angle-left"></i></a></li>
+                @if (Model.TotalPageCount < 10)
+                {
+                    @for (int i = 0; i < Model.TotalPageCount; i++)
+                    {
+                        if (Model.CurrentPage == i)
+                        {
+                            <li class="active"><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i+1)</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i+1)</a></li>
+                        }
+
+                    }
+                    
+                }
+                else
+                {
+                    if (Model.CurrentPage > 4 && Model.CurrentPage < Model.TotalPageCount - 4)
+                    {
+                        for (int i = Model.CurrentPage - 3; i < Model.CurrentPage + 3; i++)
+                        {
+                            if (Model.CurrentPage == i)
+                            {
+                                <li class="active"><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                        }
+                    }
+                    else if (Model.CurrentPage > 4)
+                    {
+                        for (int i = Model.CurrentPage - 3; i < Model.TotalPageCount; i++)
+                        {
+                            if (Model.CurrentPage == i)
+                            {
+                                <li class="active"><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                        }
+                    }
+                    else if (Model.CurrentPage < Model.TotalPageCount - 4)
+                    {
+                        for (int i = 0; i < Model.CurrentPage + 3; i++)
+                        {
+                            if (Model.CurrentPage == i)
+                            {
+                                <li class="active"><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="@urlTemplate.Replace("{0}", $"{i}")">@(i + 1)</a></li>
+                            }
+                        }
+                    }
+
+                }
+                <li class="next"><a href="@urlTemplate.Replace("{0}", $"{Model.TotalPageCount-1}")"><i class="fa fa-angle-right"></i></a></li>
+            </ul>
+            <!-- /.list-inline -->
+        </div>
+        <!-- /.pagination-container -->
+    </div>
+    <!-- /.text-right -->
+
+</div>
