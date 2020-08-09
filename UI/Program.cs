@@ -18,7 +18,12 @@ namespace UI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-             
+             .ConfigureLogging((hostbuilder, logbuilder) =>
+             {
+                 logbuilder.AddConsole();
+                 
+
+             })
             .ConfigureWebHostDefaults(webBuilder =>
                 {
                     

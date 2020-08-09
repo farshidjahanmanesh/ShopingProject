@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EntityModels\EntityModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     
     <Reference Include="DataAccess">
       <HintPath>..\DataAccess\bin\Debug\netcoreapp3.1\DataAccess.dll</HintPath>

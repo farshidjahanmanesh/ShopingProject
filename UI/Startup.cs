@@ -4,6 +4,9 @@ using DataAccess.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +18,7 @@ using ServiceLayer.Services.ProductServices;
 using ServiceLayer.Services.SiteServices;
 using StackExchange.Profiling.Storage;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using UI.Constraint;
@@ -22,6 +26,8 @@ using UI.middleware;
 
 namespace UI
 {
+   
+
     public class Startup
     {
         private readonly IConfiguration configuration;
@@ -49,7 +55,13 @@ namespace UI
             services.AddHttpContextAccessor();
 
 
-
+            services.Configure<RouteOptions>(config =>
+            {
+                config.ConstraintMap.Add("BanScript", typeof(BanScriptRouteConstraint));
+                config.LowercaseUrls = true;
+                config.LowercaseQueryStrings = true;
+                config.AppendTrailingSlash = true;
+            });
 
             services.AddMiniProfiler(options => options.RouteBasePath = "/profiler").AddEntityFramework();
 
@@ -61,33 +73,40 @@ namespace UI
             // app.UseMiddleware<BanIpsMiddleware>();
             //app.UseMiddleware<SiteViewMiddleware>();
 
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //    app.UseMiniProfiler();
-            //}
-            app.UseExceptionHandler("/Home/Error");
-            //   app.UseDeveloperExceptionPage();
-
-
-            app.UseStatusCodePages(handler: context =>
+            if (env.IsDevelopment())
             {
-                var request = context.HttpContext.Request;
-                var response = context.HttpContext.Response;
-                if (response.StatusCode != 200)
+                app.UseDeveloperExceptionPage();
+                app.UseMiniProfiler();
+            }
+            else if (env.IsProduction())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseStatusCodePages(handler: async context =>
                 {
-                    response.Redirect($"/error/{response.StatusCode}");
-                }
+                    var request = context.HttpContext.Request;
+                    var response = context.HttpContext.Response;
+                    if (response.StatusCode != 200)
+                    {
+                        response.Redirect($"/error/{response.StatusCode}");
+                    }
 
-                return Task.CompletedTask;
-            });
+                    await Task.CompletedTask;
+                });
+            }
 
+          
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
+
+                endpoints.MapControllerRoute(
+                   name: "NameProductSearch",
+                   pattern: "NameSearching/",
+                   defaults: new { Controller = "product", action = "NameProductSearch" }
+                   );
 
                 endpoints.MapControllerRoute(
                     name: "categorysearch",

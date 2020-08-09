@@ -1,7 +1,5 @@
 ﻿@model ProductDto
 
-@{
-}
 
 <style>
     .padding-10 {
@@ -423,32 +421,13 @@
             if ($('#replyNumber').val().trim() >@Model.Count) {
                  $('#myModal').modal('hide');
                  $('#myModal').modal('show');
-                 $('.modal-title').text('تعداد انتخابی از تعداد کل موجودی بیشتر است');
-                $('.modal-body-ms').text(result);
+                 $('.modal-title').text('امکان خرید این تعداد محصول وجود ندارد');
+                $('.modal-body-ms').text('تعداد انتخابی از تعداد کل موجودی بیشتر است');
                 return;
             }
+
             AddFromCart(@Model.Id, $('#replyNumber').val().trim());
 
-            @*var ShopCartCoockie = {
-                Productid : '',
-                count : $('#replyNumber').val().trim()
-            };
-
-            $.ajax({
-                url: '@Url.Action("AddToCoockie","product")',
-                type: 'post',
-                contentType: 'application/json',
-                data: JSON.stringify(ShopCartCoockie),
-                success: function (result) {
-                    if (result == "add") {
-                        var container = $("#shopcart");
-                        $.get("/product/ShopCartRefresh", function (data) { container.html(data); });
-
-                    } else if (result == "false") {
-
-                    }
-                }
-            });*@
         }
 
 

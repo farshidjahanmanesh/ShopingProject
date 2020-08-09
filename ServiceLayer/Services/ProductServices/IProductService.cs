@@ -19,7 +19,7 @@ namespace ServiceLayer.Services.ProductServices
     public interface IProductService
     {
         #region product
-         Task<ProductDto> FindProductAsyncWithOutDependencies(int id);
+        Task<ProductDto> FindProductAsyncWithOutDependencies(int id);
         Task<TaskStatus> AddProductAsync(ProductDto pr);
         bool RemoveProduct(int id);
         void UpdateProduct(ProductDto product);
@@ -27,8 +27,9 @@ namespace ServiceLayer.Services.ProductServices
         List<ProductDto> FindProducts(int count, int page, string name);
         List<FeaturedProductDto> FindProductsWithTagName(int count, int page, string tagname, ProductOrder orderby = ProductOrder.dateDes);
         int TotalProductByKeywordCount(string tagname);
-
-
+        List<FeaturedProductDto> NameProductSearch(int count, int page, string text, ProductOrder orderby = ProductOrder.dateDes);
+        int TotalProductByNameCount(string ProductName);
+        bool IsProductExist(int productid);
         #endregion
 
         #region category
@@ -129,6 +130,22 @@ namespace ServiceLayer.Services.ProductServices
             DtoProducts.ForEach(x => x.TagName = tagname == null ? "" : tagname);
             return DtoProducts;
         }
+
+        public List<FeaturedProductDto> NameProductSearch(int count, int page, string text, ProductOrder orderby = ProductOrder.dateDes)
+        {
+            var QueryResult = ctx.Product.Where(x => x.Name.Contains(text)).SkipAndTake(page, count, orderby).ToList();
+            var result = mapper.Map<List<FeaturedProductDto>>(QueryResult);
+            return result;
+        }
+        public int TotalProductByNameCount(string ProductName)
+        {
+            return ctx.Product.Where(x => x.Name.Contains(ProductName)).Count();
+        }
+
+        public bool IsProductExist(int productid)
+        {
+            return ctx.Product.Any(x => x.Id == productid);
+        }
         #endregion
 
         #region category
@@ -188,6 +205,7 @@ namespace ServiceLayer.Services.ProductServices
         {
             return await ctx.SaveChangesAsync();
         }
+
 
         #endregion
 

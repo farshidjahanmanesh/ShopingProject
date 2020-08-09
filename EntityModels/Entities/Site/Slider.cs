@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityModels.Entities.Products;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace EntityModels.Entities.Site
         public string Summery { get; set; }
         public string Tag { get; set; }
         public string Name { get; set; }
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
     }
 
     public class SliderConfig : IEntityTypeConfiguration<Slider>
@@ -24,6 +27,8 @@ namespace EntityModels.Entities.Site
             builder.Property(x => x.Summery).HasMaxLength(500).IsRequired();
             builder.Property(x => x.Tag).HasMaxLength(200).IsRequired();
             builder.Property(x => x.Name).HasMaxLength(300).IsRequired();
+            builder.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EntityModels.DTOs.ProductDtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Security.Application;
 using Newtonsoft.Json;
 using ServiceLayer.Services.ProductServices;
@@ -19,10 +20,12 @@ namespace UI.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService service;
+        private readonly ILogger<ProductController> logger;
 
-        public ProductController(IProductService service)
+        public ProductController(IProductService service, ILogger<ProductController> logger)
         {
             this.service = service;
+            this.logger = logger;
         }
         public IActionResult Index()
         {
@@ -44,14 +47,15 @@ namespace UI.Controllers
                 }
                 else
                 {
+                    logger.LogWarning($"product not fount.  /product/showproduct/{id}");
+                    return RedirectToAction("NotValid", controllerName: "Error");
                     //must redirect to error view
                 }
-                return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                logger.LogError(exception: ex, $"/product/showproduct/{id}");
+                return RedirectToAction("500", controllerName: "Error");
             }
 
         }
@@ -59,40 +63,65 @@ namespace UI.Controllers
         [HttpPost]
         public JsonResult SaveCommnet([FromBody]CommentViewModel comment, int postid)
         {
-            comment.Email = Sanitizer.GetSafeHtmlFragment(comment.Email);
-            comment.name = Sanitizer.GetSafeHtmlFragment(comment.name);
-            comment.Text = Sanitizer.GetSafeHtmlFragment(comment.Text);
-            if (ModelState.IsValid)
+            try
             {
-                if (!comment.Email.EmailValidation())
+                comment.Email = Sanitizer.GetSafeHtmlFragment(comment.Email);
+                comment.name = Sanitizer.GetSafeHtmlFragment(comment.name);
+                comment.Text = Sanitizer.GetSafeHtmlFragment(comment.Text);
+                if (ModelState.IsValid)
                 {
-                    return Json("Email Is Not Valid");
-                }
-
-                service.AddComment(new EntityModels.DTOs.ProductDtos.ProductCommentDto()
-                {
-                    Email = comment.Email,
-                    Name = comment.name,
-                    ProductId = postid,
-                    Text = comment.Text
-                });
-
-                service.SaveChanges();
-                return Json("success");
-            }
-            else
-            {
-                StringBuilder result = new StringBuilder();
-                foreach (var item in ModelState.Values)
-                {
-                    foreach (var erroritem in item.Errors)
+                    if ((comment.name == null || comment.name == "") && (comment.Text == null || comment.Text == ""))
                     {
-                        result.AppendLine(erroritem.ErrorMessage);
-
+                        logger.LogWarning(message: "/product/saveComment/  some properties is null");
+                        return Json("not valid");
                     }
+                    if (postid <= 0)
+                    {
+                        logger.LogWarning(message: "/product/saveComment/  id is equals 0");
+
+                        return Json("not valid");
+                    }
+                    if (!comment.Email.EmailValidation())
+                    {
+                        return Json("Email Is Not Valid");
+                    }
+                    if (!service.IsProductExist(postid))
+                    {
+                        logger.LogWarning(message: "/product/saveComment/  id is not exist in product table");
+                        return Json("not valid");
+                    }
+
+                    service.AddComment(new EntityModels.DTOs.ProductDtos.ProductCommentDto()
+                    {
+                        Email = comment.Email,
+                        Name = comment.name,
+                        ProductId = postid,
+                        Text = comment.Text
+                    });
+
+                    service.SaveChanges();
+                    return Json("success");
                 }
-                return Json(result.ToString());
+                else
+                {
+                    StringBuilder result = new StringBuilder();
+                    foreach (var item in ModelState.Values)
+                    {
+                        foreach (var erroritem in item.Errors)
+                        {
+                            result.AppendLine(erroritem.ErrorMessage);
+
+                        }
+                    }
+                    return Json(result.ToString());
+                }
             }
+            catch (Exception ex)
+            {
+                logger.LogError(exception: ex, "/product/saveComment/");
+                return Json("500error");
+            }
+
 
 
         }
@@ -140,6 +169,7 @@ namespace UI.Controllers
                 var result = service.FindProductsWithTagName(count, page, keyword, porder);
                 if (result == null)
                 {
+                    logger.LogWarning(message: "/product/ProductSearch",count,page,keyword);
                     return View(new List<FeaturedProductDto>());
                 }
 
@@ -151,9 +181,10 @@ namespace UI.Controllers
                 return View(products);
                 // return View(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(exception: ex, "/product/ProductSearch/");
+                return RedirectToAction("error500", controllerName: "error");
             }
         }
 
@@ -201,6 +232,70 @@ namespace UI.Controllers
                 Pager<FeaturedProductDto> products = new Pager<FeaturedProductDto>(result, service.ProductGroupCount(id), count, page);
 
                 products.Key = id.ToString();
+                products.OrderSelect = OrderName;
+                return View(products);
+                // return View(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(exception: ex, "/product/CategoryProductSearch/");
+                return RedirectToAction("error500", "error");
+            }
+        }
+
+        public IActionResult NameProductSearch(string name, int page = 0, int order = 0)
+        {
+            try
+            {
+
+                name = Sanitizer.GetSafeHtmlFragment(name);
+                if (name.Equals("") || name.Equals(null))
+                {
+                    //need to redirect to error page
+                    return RedirectToAction("NotValid", controllerName: "Error");
+
+                }
+
+                int count = 9;
+                if (page < 0)
+                    page = 0;
+
+                ProductOrder porder = ProductOrder.dateDes;
+                string OrderName = "تاریخ : جدیدترین";
+                switch (order)
+                {
+                    case 0:
+                        porder = ProductOrder.dateDes;
+                        break;
+
+                    case 1:
+                        porder = ProductOrder.dateAs;
+                        OrderName = "تاریخ : قدیمی ترین";
+                        break;
+
+                    case 2:
+                        porder = ProductOrder.priceDes;
+                        OrderName = "قیمت : صعودی";
+                        break;
+
+                    case 3:
+                        porder = ProductOrder.priceAs;
+                        OrderName = "قیمت : نزولی";
+                        break;
+
+                }
+
+
+                var result = service.NameProductSearch(count, page, name, porder);
+                if (result == null)
+                {
+                    return View(new List<FeaturedProductDto>());
+                }
+
+
+                Pager<FeaturedProductDto> products = new Pager<FeaturedProductDto>(result, service.TotalProductByNameCount(name), count, page);
+
+                products.Key = name;
                 products.OrderSelect = OrderName;
                 return View(products);
                 // return View(result);
@@ -259,7 +354,7 @@ namespace UI.Controllers
                 Dictionary<int, int> result;
                 if (Jsonresult != null)
                 {
-                     result = JsonConvert.DeserializeObject<Dictionary<int, int>>(Jsonresult);
+                    result = JsonConvert.DeserializeObject<Dictionary<int, int>>(Jsonresult);
                 }
                 else
                 {
@@ -284,10 +379,10 @@ namespace UI.Controllers
             {
                 return Json("false");
             }
-            
 
-            
-           
+
+
+
         }
         public IActionResult ShopCartRefresh()
         {
@@ -295,6 +390,6 @@ namespace UI.Controllers
         }
 
 
-        
+
     }
 }

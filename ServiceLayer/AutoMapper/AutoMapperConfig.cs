@@ -3,9 +3,11 @@ using EntityModels.DTOs;
 using EntityModels.DTOs.CategoriesDtos;
 using EntityModels.DTOs.PostDtos;
 using EntityModels.DTOs.ProductDtos;
+using EntityModels.DTOs.SiteDtos;
 using EntityModels.Entities.Categories;
 using EntityModels.Entities.Posts;
 using EntityModels.Entities.Products;
+using EntityModels.Entities.Site;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -54,7 +56,7 @@ namespace ServiceLayer.AutoMapper
             config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<ProductGroups, ProductGroupsDto>().MapOnlyIfChanged();
                 cfg.CreateMap<ProductGroupsDto, ProductGroups>().MapOnlyIfChanged();
-
+                cfg.CreateMap<Slider, SliderDto>();
                 cfg.CreateMap<PostSummeryDto, Post>().MapOnlyIfChanged();
                 cfg.CreateMap<Post, PostSummeryDto>().MapOnlyIfChanged();
                 cfg.CreateMap<PostDto, Post>().MapOnlyIfChanged();

@@ -1,8 +1,11 @@
 ﻿using EntityModels.DTOs.ProductDtos;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace UI.ViewModels
+namespace EntityModels.DTOs.SiteDtos
 {
-    public class SliderViewModel
+    public class SliderDto
     {
         public int Id { get; set; }
         public string Path { get; set; }
@@ -12,5 +15,4 @@ namespace UI.ViewModels
         public int ProductId { get; set; }
         public ProductDto Product { get; set; }
     }
-
 }

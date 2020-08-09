@@ -13,14 +13,20 @@ namespace UI.Constraint
         public bool Match(HttpContext httpContext, IRouter route,
             string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
-
+            if (string.IsNullOrEmpty(values[routeKey]?.ToString()))
+            {
+                return false;
+            }
             var RouteValue = values[routeKey].ToString();
 
             string Safevalue = Sanitizer.GetSafeHtmlFragment(RouteValue);
-            
-            return Safevalue == RouteValue ? true : false;
-            
-            throw new NotImplementedException();
+
+            if (Safevalue == RouteValue)
+                return true;
+
+            httpContext.Response.Redirect("/error/script");
+            return true;
+
         }
     }
 }

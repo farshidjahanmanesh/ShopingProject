@@ -17,6 +17,8 @@
     <Compile Remove="Migrations\20200508181037_productsummery.Designer.cs" />
     <Compile Remove="Migrations\20200508181333_productsummery.cs" />
     <Compile Remove="Migrations\20200508181333_productsummery.Designer.cs" />
+    <Compile Remove="Migrations\20200525201314_SetProductForSliderTable.cs" />
+    <Compile Remove="Migrations\20200525201314_SetProductForSliderTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

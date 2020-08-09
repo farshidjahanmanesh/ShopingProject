@@ -2,6 +2,8 @@
 using EntityModels.DTOs.CategoriesDtos;
 using EntityModels.DTOs.PostDtos;
 using EntityModels.DTOs.ProductDtos;
+using EntityModels.DTOs.SiteDtos;
+using EntityModels.Entities.Products;
 using EntityModels.Entities.Site;
 using System;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace UI.InfraStructure
             CreateMap<SummeryLastCommentDto, LastCommentsViewModel>();
             CreateMap<NavbarDto, NavbarViewModel>();
             CreateMap<NavbarDto.NestedProductGroupDto, NavbarViewModel.NestedProductViewModel>();
-            CreateMap<Slider, SliderViewModel>();
+            CreateMap<SliderDto, SliderViewModel>();
             CreateMap<PostDto, ShowSinglePostViewModel>();
 
         }

@@ -1,5 +1,8 @@
-﻿using DataAccess.Context;
+﻿using AutoMapper;
+using DataAccess.Context;
+using EntityModels.DTOs.SiteDtos;
 using EntityModels.Entities.Site;
+using ServiceLayer.AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +13,7 @@ namespace ServiceLayer.Services.SiteServices
     public interface ISiteService
     {
         #region slider
-        List<Slider> GetSliders();
+        List<SliderDto> GetSliders();
         #endregion
 
 
@@ -24,18 +27,21 @@ namespace ServiceLayer.Services.SiteServices
     public class SiteService : ISiteService
     {
         private readonly ShopDbContext ctx;
+        private readonly IMapper mapper;
 
-        public SiteService(ShopDbContext ctx)
+        public SiteService(ShopDbContext ctx,MyMapper mapper)
         {
             this.ctx = ctx;
+            this.mapper = mapper.CreateMappings();
         }
 
 
 
         #region slider
-        public List<Slider> GetSliders()
+        public List<SliderDto> GetSliders()
         {
-            return ctx.Slider.ToList();
+           return mapper.Map<List<SliderDto>>(ctx.Slider.ToList());
+           
         }
         #endregion
 
